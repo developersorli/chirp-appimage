@@ -9,7 +9,7 @@ AppDir:
   after_bundle:
     - |
       python3 -m pip install chirp-*.whl --ignore-installed --prefix=/usr --root=./AppDir
-      cp AppDir/usr/local/lib/python3.10/dist-packages/chirp/share/chirp.png AppDir/usr/share/icons/
+      cp AppDir/usr/lib/python3.12/site-packages/chirp/share/chirp.png AppDir/usr/share/icons/
       
   app_info:
     id: com.danplanet.chirp
@@ -17,7 +17,7 @@ AppDir:
     icon: chirp
     version: ${CHIRP_VERSION}
     exec: usr/bin/python3
-    exec_args: "$APPDIR/usr/local/bin/chirp"
+    exec_args: "$APPDIR/usr/bin/chirp"
 
   apt:
     arch: ${TARGET_ARCH_APT}
@@ -79,7 +79,7 @@ AppDir:
 
     env:
       PYTHONHOME: $APPDIR/usr
-      PYTHONPATH: $APPDIR/usr/lib/python3/dist-packages:$APPDIR/usr/lib/python3.8/site-packages:$APPDIR/usr/lib/python3.10/site-packages
+      PYTHONPATH: $APPDIR/usr/lib/python3/dist-packages:$APPDIR/usr/lib/python3.12/site-packages
       XDG_DATA_DIRS: $APPDIR/share:$XDG_DATA_DIRS
       FONTCONFIG_FILE: $APPDIR/etc/fonts/fonts.conf
       FONTCONFIG_PATH: $APPDIR/etc/fonts
@@ -88,4 +88,3 @@ AppImage:
   sign-key: None
   # https://github.com/AppImage/AppImageKit/releases/
   arch: ${TARGET_ARCH_APPIMAGE}
-  comp: zstd
