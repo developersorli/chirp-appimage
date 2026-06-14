@@ -21,7 +21,7 @@ AppDir:
     icon: chirp
     version: ${CHIRP_VERSION}
     exec: usr/bin/python3
-    exec_args: "$APPDIR/usr/bin/chirp"
+    exec_args: "$APPDIR/usr/local/bin/chirp"
 
   apt:
     arch: ${TARGET_ARCH_APT}
