@@ -8,9 +8,10 @@ rm -f Chirp-*-*.AppImage
 #ver_without_next=${ver_with_next//next-/}
 #curl -H "User-Agent: goldstar611" -o chirp-${ver_without_next}-py3-none-any.whl https://archive.chirpmyradio.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}-py3-none-any.whl
 
-ver_with_next=$(python3 ./chirp_mirror_dl.py)
-mv ./s3downloads/*.whl ./
-export CHIRP_VERSION=${ver_with_next}
+# Download directly from chirpmyradio.com instead of broken S3 bucket
+CHIRP_VERSION=$(curl -s -L -H "User-Agent: goldstar611" -I "https://archive.chirpmyradio.com/download?stream=next" 2>&1 | grep -i location | head -1 | grep -oE '[0-9]{8}')
+export CHIRP_VERSION
+wget -q --header="User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/next-${CHIRP_VERSION}/chirp-${CHIRP_VERSION}-py3-none-any.whl"
 
 # x86_64 (64-bit Intel/AMD)
 export TARGET_ARCH_APT=amd64
