@@ -13,3 +13,30 @@ appimagetool
 *.zsync
 # Ignore actual appimage binary
 *.AppImage
+
+# Python virtual environment
+venv/
+
+# Downloaded wheel files
+*.whl
+
+# Bundle metadata
+.bundle.yml
+
+# Squashfs intermediate files
+*.squashfs
+
+# AppImage build artifacts
+appimage-build/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
