@@ -17,10 +17,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y git python3-pip patchelf fakeroot gettext
-          sudo -H pip3 install git+https://github.com/AppImageCrafters/appimage-builder.git
+          sudo -H pip3 install --upgrade pip setuptools setuptools-scm
+          sudo -H pip3 install appimage-builder
           arch=$(uname -m)
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${arch}.AppImage -O /usr/bin/appimagetool
           sudo chmod +x /usr/bin/appimagetool
+
 
       - name: Check latest CHIRP version and compare with latest release
         id: check_version
