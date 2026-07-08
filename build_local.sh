@@ -11,10 +11,8 @@ echo "Latest version directory: ${LATEST_DIR}"
 CHIRP_VERSION=${LATEST_DIR#next-}
 echo "CHIRP version: ${CHIRP_VERSION}"
 
-# Download the wheel
-WHEEL_URL="https://archive.chirpmyradio.com/chirp_next/${LATEST_DIR}/chirp-${CHIRP_VERSION}-py3-none-any.whl"
-echo "Downloading from: ${WHEEL_URL}"
-curl -L -H "User-Agent: goldstar611" -o "chirp-${CHIRP_VERSION}-py3-none-any.whl" "${WHEEL_URL}"
+# Download the wheel using Python (more reliable than curl on GitHub Actions)
+python3 ./fetch_latest_version.py --download "${LATEST_DIR}"
 
 export CHIRP_VERSION="${LATEST_DIR}"
 
