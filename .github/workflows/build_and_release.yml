@@ -17,45 +17,50 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y git python3-pip patchelf fakeroot gettext
-          sudo -H pip3 install pyopenssl boto3 --upgrade
           sudo -H pip3 install git+https://github.com/AppImageCrafters/appimage-builder.git
           arch=$(uname -m)
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${arch}.AppImage -O /usr/bin/appimagetool
           sudo chmod +x /usr/bin/appimagetool
 
-      - name: Check if Release Exists
-        id: release_exists
+      - name: Check latest CHIRP version and compare with latest release
+        id: check_version
         env:
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [[ -z "${GITHUB_WORKSPACE}" ]]; then
-            # Use curl if not github.com actions not detected
-            ver_with_next=$(basename $(curl -L -s -o /dev/null -w '%{url_effective}' "https://archive.chirpmyradio.com/download?stream=next"))
-          else
-            # If github.com actions is detected, use alternate method to avoid Cloudflare blocks
-            ver_with_next=$(python3 ./chirp_mirror_version.py)
-          fi
+          # Get the latest version from archive.chirpmyradio.com
+          LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | grep -oP 'href="next-[^/]*/"' | grep -oP 'next-[^/]*' | sort -r | head -1)
+          echo "Latest version directory: ${LATEST_DIR}"
 
-          # Save $ver_with_next for the Release job
-          echo "VER_WITH_NEXT=$ver_with_next" >> $GITHUB_ENV
+          # Extract version number
+          CHIRP_VERSION=${LATEST_DIR#next-}
+          echo "CHIRP version: ${CHIRP_VERSION}"
 
-          # The `gh release view` command returns a non-zero exit code if the release does not exist.
-          # Set the appropriate shell option so the script continues.
+          # Save for later steps
+          echo "VER_WITH_NEXT=$LATEST_DIR" >> $GITHUB_ENV
+          echo "CHIRP_VERSION=$CHIRP_VERSION" >> $GITHUB_ENV
+
+          # Get the latest release tag from GitHub
           set +e
+          LATEST_RELEASE=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null)
+          echo "Latest GitHub release tag: ${LATEST_RELEASE}"
 
-          gh release view ${ver_with_next}
-          if [ $? -eq 0 ]; then
+          if [ -z "${LATEST_RELEASE}" ]; then
+            echo "No previous releases found. Proceeding with build."
+            echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
+          elif [ "${LATEST_DIR}" = "${LATEST_RELEASE}" ]; then
+            echo "Latest CHIRP version (${LATEST_DIR}) matches latest release (${LATEST_RELEASE}). No new version. Skipping build."
             echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
           else
+            echo "New CHIRP version detected: ${LATEST_DIR} (previous: ${LATEST_RELEASE}). Proceeding with build."
             echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
           fi
 
       - name: Build AppImage
         if: ${{ env.RELEASE_EXISTS == 'false' }}
         run: |
-          chmod +x ./build.sh
-          ./build.sh
+          chmod +x ./build_local.sh
+          ./build_local.sh
 
       - name: Release
         if: ${{ env.RELEASE_EXISTS == 'false' }}
@@ -67,3 +72,6 @@ jobs:
           tag="${{ env.VER_WITH_NEXT }}"
 
           gh release create --latest ${tag} -t ${tag} ${artifacts} --notes ""
+
+
+
