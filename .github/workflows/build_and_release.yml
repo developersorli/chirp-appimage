@@ -31,7 +31,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # Get the latest version from archive.chirpmyradio.com
-          LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | python3 -c "import sys, re; html = sys.stdin.read(); matches = re.findall(r'href=\"(next-\d+/)\"', html); print(sorted(matches)[-1].rstrip('/') if matches else '')")
+          LATEST_DIR=$(python3 ./fetch_latest_version.py)
           echo "Latest version directory: ${LATEST_DIR}"
 
           # Extract version number
