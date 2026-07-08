@@ -4,13 +4,7 @@ set -xe
 rm -f Chirp-*-*.AppImage
 
 # Download the latest CHIRP wheel from archive.chirpmyradio.com
-LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | python3 -c "
-import sys, re
-html = sys.stdin.read()
-matches = re.findall(r'href=\"(next-\d+/)\"', html)
-if matches:
-    print(sorted(matches)[-1].rstrip('/'))
-")
+LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | python3 -c "import sys, re; html = sys.stdin.read(); matches = re.findall(r'href=\"(next-\d+/)\"', html); print(sorted(matches)[-1].rstrip('/') if matches else '')")
 echo "Latest version directory: ${LATEST_DIR}"
 
 # Extract version number from directory name (e.g., next-20260612 -> 20260612)
