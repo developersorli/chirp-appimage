@@ -10,10 +10,14 @@ AppDir:
     - |
       python3 -m pip install chirp-*.whl --ignore-installed --prefix=/usr --root=./AppDir
       mkdir -p AppDir/usr/share/pixmaps
-      cp AppDir/usr/local/lib/python3.12/dist-packages/chirp/share/chirp.png AppDir/usr/share/pixmaps/chirp.png 2>/dev/null || true
-      cp AppDir/usr/local/lib/python3.12/dist-packages/chirp/share/chirp.svg AppDir/usr/share/pixmaps/chirp.svg 2>/dev/null || true
-      mkdir -p AppDir/usr/share/applications
-      cp AppDir/usr/local/lib/python3.12/dist-packages/chirp/share/chirp.desktop AppDir/usr/share/applications/ 2>/dev/null || true
+      # Find and copy chirp icons/desktop file from the installed package (path varies by Python version)
+      CHIRP_SHARE_DIR=$(find AppDir/usr -type d -path "*/chirp/share" 2>/dev/null | head -1)
+      if [ -n "${CHIRP_SHARE_DIR}" ]; then
+        cp "${CHIRP_SHARE_DIR}/chirp.png" AppDir/usr/share/pixmaps/chirp.png 2>/dev/null || true
+        cp "${CHIRP_SHARE_DIR}/chirp.svg" AppDir/usr/share/pixmaps/chirp.svg 2>/dev/null || true
+        mkdir -p AppDir/usr/share/applications
+        cp "${CHIRP_SHARE_DIR}/chirp.desktop" AppDir/usr/share/applications/ 2>/dev/null || true
+      fi
       
   app_info:
     id: com.danplanet.chirp
@@ -83,7 +87,7 @@ AppDir:
 
     env:
       PYTHONHOME: $APPDIR/usr
-      PYTHONPATH: $APPDIR/usr/lib/python3/dist-packages:$APPDIR/usr/local/lib/python3.12/dist-packages:$APPDIR/usr/lib/python3.12/site-packages
+      PYTHONPATH: $APPDIR/usr/lib/python3/dist-packages:$APPDIR/usr/local/lib/python3/dist-packages
       XDG_DATA_DIRS: $APPDIR/share:$XDG_DATA_DIRS
       FONTCONFIG_FILE: $APPDIR/etc/fonts/fonts.conf
       FONTCONFIG_PATH: $APPDIR/etc/fonts
