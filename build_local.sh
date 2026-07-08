@@ -4,7 +4,7 @@ set -xe
 rm -f Chirp-*-*.AppImage
 
 # Download the latest CHIRP wheel from archive.chirpmyradio.com
-LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | grep -oP 'href="next-[^/]*/"' | grep -oP 'next-[^/]*' | sort -r | head -1)
+LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | grep -o 'href="next-[^/]*/"' | grep -o 'next-[^/]*' | sort -r | head -1)
 echo "Latest version directory: ${LATEST_DIR}"
 
 # Extract version number from directory name (e.g., next-20260612 -> 20260612)
