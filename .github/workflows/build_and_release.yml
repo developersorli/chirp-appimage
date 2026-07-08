@@ -31,7 +31,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # Get the latest version from archive.chirpmyradio.com
-          LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | grep -o 'href="next-[^/]*/"' | grep -o 'next-[^/]*' | sort -r | head -1)
+          LATEST_DIR=$(curl -sL -H "User-Agent: goldstar611" "https://archive.chirpmyradio.com/chirp_next/" | python3 -c "
+import sys, re
+html = sys.stdin.read()
+matches = re.findall(r'href=\"(next-\d+/)\"', html)
+if matches:
+    print(sorted(matches)[-1].rstrip('/'))
+")
           echo "Latest version directory: ${LATEST_DIR}"
 
           # Extract version number
