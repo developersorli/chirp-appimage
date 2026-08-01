@@ -2,7 +2,10 @@ name: build_and_release
 
 on:
   schedule:
-    - cron: '06 11 * * *'
+    # Run in the evening (18:00 UTC = 20:00 CEST) so the workflow runs AFTER
+    # the daily CHIRP nightly build is published on archive.chirpmyradio.com
+    # (the wheel is typically published around 14:30 UTC).
+    - cron: '0 18 * * *'
 
   workflow_dispatch:
 
